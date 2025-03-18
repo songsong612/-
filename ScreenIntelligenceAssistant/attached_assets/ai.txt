@@ -1,0 +1,93 @@
+deepseek
+调用格式python格式：
+他的api需要在openai sdk使用，下面是调用deepseekapi的的Python代码“样例脚本的来访问 DeepSeek API。
+“# Please install OpenAI SDK first: pip3 install openai
+
+from openai import OpenAI
+
+client = OpenAI(api_key="<deepseekapi>", base_url="https://api.deepseek.com")
+
+response = client.chat.completions.create(
+model="deepseek-reasoner",
+messages=[
+{"role": "system", "content": "You are a helpful assistant"},
+{"role": "user", "content": "Hello"},
+],
+stream=False
+)
+
+print(response.choices[0].message.content)””
+
+Googleai
+调用格式python格式“from google import genai
+from google.genai import types
+
+import PIL.Image
+
+image = PIL.Image.open('/path/to/image.png')
+
+client = genai.Client(api_key="GEMINI_API_KEY")
+response = client.models.generate_content(
+    model="gemini-2.0-flash",
+    contents=["What is this image?", image])
+
+print(response.text)”
+
+grok
+
+在您的环境中设置 API 密钥：export XAI_API_KEY="your_api_key"
+
+#Reminder on image understanding model general limitations
+It might be easier to run into model limit with these models than chat models:
+
+Maximum image size: 
+10MiB
+Maximum number of images: No limit
+Supported image file types: 
+jpg/jpeg
+ or 
+png
+.
+Any image/text input order is accepted (e.g. text prompt can precede image prompt)
+#Constructing the Message Body - Difference from Chat
+The request message to image understanding is similar to chat. The main difference is that instead of text input:
+
+json
+
+
+[
+    {
+        "role": "user",
+        "content": "What is in this image ?",
+    }
+]
+We send in 
+content
+ as a list of objects:
+
+json
+
+
+[
+    {
+        "role": "user",
+        "content": [
+            {
+                "type": "image_url",
+                "image_url": {
+                    "url": "data:image/jpeg;base64,<base64_image_string>",
+                    "detail": "high",
+                },
+            },
+            {
+                "type": "text",
+                "text": "What is in this image ?",
+            },
+        ],
+    }
+]
+The 
+image_url.url
+ can also be the image's url on the Internet.
+
+You can use the text prompt to ask questions about the image(s), or discuss topics with the image as context to the discussion, etc.

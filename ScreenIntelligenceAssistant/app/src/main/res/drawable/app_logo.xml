@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+  
+  <!-- Background Circle -->
+  <path
+      android:fillColor="@color/colorPrimary"
+      android:pathData="M60,60m-58,0a58,58 0,1 1,116 0a58,58 0,1 1,-116 0" />
+  
+  <!-- Screen Icon -->
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M84,30H36c-3.3,0 -6,2.7 -6,6v48c0,3.3 2.7,6 6,6h48c3.3,0 6,-2.7 6,-6V36C90,32.7 87.3,30 84,30zM84,84H36V42h48V84z" />
+  
+  <!-- AI Brain -->
+  <path
+      android:fillColor="@color/colorAccent"
+      android:pathData="M71,60m-12,0a12,12 0,1 1,24 0a12,12 0,1 1,-24 0" />
+  
+  <!-- Connection lines -->
+  <path
+      android:strokeColor="@color/colorAccent"
+      android:strokeWidth="3"
+      android:strokeLineCap="round"
+      android:pathData="M50,50L59,59" />
+  
+  <path
+      android:strokeColor="@color/colorAccent"
+      android:strokeWidth="3"
+      android:strokeLineCap="round"
+      android:pathData="M50,70L59,61" />
+  
+  <path
+      android:strokeColor="@color/colorAccent"
+      android:strokeWidth="3"
+      android:strokeLineCap="round"
+      android:pathData="M71,60L83,60" />
+  
+  <!-- Magnifying Glass -->
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M50,60m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0" />
+  
+  <path
+      android:fillColor="@color/colorPrimary"
+      android:pathData="M50,60m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0" />
+</vector>

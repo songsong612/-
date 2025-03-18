@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 屏幕分析器</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            padding-bottom: 60px;
+        }
+        .app-header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #2196F3;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .app-logo {
+            width: 80px;
+            height: 80px;
+            background-color: #2196F3;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .floating-window {
+            position: absolute;
+            width: 300px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            resize: both;
+            overflow: hidden;
+            min-width: 120px;
+            min-height: 40px;
+        }
+        .floating-window-header {
+            padding: 8px;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .floating-window-body {
+            padding: 10px;
+        }
+        .btn-icon {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        .capture-area {
+            height: 200px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        .control-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            padding: 10px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .result-text {
+            height: 150px;
+            overflow-y: auto;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        .expanded-content {
+            display: none;
+        }
+        .settings-panel {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .settings-section {
+            margin-bottom: 20px;
+        }
+        .api-key-input {
+            margin-bottom: 10px;
+        }
+        #preview-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .drag-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+            z-index: 999;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-header">
+            <div class="app-logo">
+                <svg width="50" height="50" viewBox="0 0 120 120">
+                    <!-- Background Circle -->
+                    <circle cx="60" cy="60" r="58" fill="#2196F3"></circle>
+                    
+                    <!-- Screen Icon -->
+                    <path d="M84,30H36c-3.3,0-6,2.7-6,6v48c0,3.3,2.7,6,6,6h48c3.3,0,6-2.7,6-6V36C90,32.7,87.3,30,84,30zM84,84H36V42h48V84z" fill="white"></path>
+                    
+                    <!-- AI Brain -->
+                    <circle cx="71" cy="60" r="12" fill="#FF4081"></circle>
+                    
+                    <!-- Connection lines -->
+                    <line x1="50" y1="50" x2="59" y2="59" stroke="#FF4081" stroke-width="3" stroke-linecap="round"></line>
+                    <line x1="50" y1="70" x2="59" y2="61" stroke="#FF4081" stroke-width="3" stroke-linecap="round"></line>
+                    <line x1="71" y1="60" x2="83" y2="60" stroke="#FF4081" stroke-width="3" stroke-linecap="round"></line>
+                    
+                    <!-- Magnifying Glass -->
+                    <circle cx="50" cy="60" r="10" fill="white"></circle>
+                    <circle cx="50" cy="60" r="6" fill="#2196F3"></circle>
+                </svg>
+            </div>
+            <h1>AI 屏幕分析器</h1>
+            <p>使用AI实时分析屏幕内容</p>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col">
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">服务状态</h5>
+                    </div>
+                    <div class="card-body">
+                        <p id="service-status">服务已停止</p>
+                        <p id="permission-status">需要获取屏幕捕获权限</p>
+                        <button id="btn-permission" class="btn btn-primary mb-2">授予权限</button>
+                        <button id="btn-start-service" class="btn btn-success" disabled>启动浮动窗口</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">AI服务设置</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="ai-service-select" class="form-label">选择默认AI服务</label>
+                            <select id="ai-service-select" class="form-select">
+                                <option value="0">DeepSeek</option>
+                                <option value="1">Google AI</option>
+                                <option value="2">Grok</option>
+                            </select>
+                        </div>
+                        <button id="btn-settings" class="btn btn-primary w-100">设置</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Window (Initially Hidden) -->
+    <div id="floating-window" class="floating-window" style="top: 100px; left: 20px; display: none;">
+        <div class="floating-window-header" id="floating-window-header">
+            <div>
+                <span>AI分析器</span>
+            </div>
+            <div>
+                <button class="btn-icon" id="btn-expand">
+                    <i class="bi bi-arrows-angle-expand"></i>
+                </button>
+                <button class="btn-icon" id="btn-close">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+        </div>
+        <div class="floating-window-body">
+            <div id="collapsed-view">
+                <!-- Collapsed View Content -->
+                <small>点击展开按钮查看更多选项</small>
+            </div>
+            <div id="expanded-view" class="expanded-content">
+                <!-- Expanded View Content -->
+                <div class="mb-2">
+                    <label for="ai-service-spinner" class="form-label small">选择AI服务</label>
+                    <select id="ai-service-spinner" class="form-select form-select-sm">
+                        <option value="0">DeepSeek</option>
+                        <option value="1">Google AI</option>
+                        <option value="2">Grok</option>
+                    </select>
+                </div>
+
+                <div class="capture-area" id="capture-area">
+                    <img id="preview-image" style="display: none;">
+                    <div id="capture-placeholder">点击捕获屏幕内容</div>
+                    <div class="spinner-border text-primary" role="status" id="loading-spinner" style="display: none;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control" id="query-input" placeholder="向AI提问...">
+                    <button class="btn btn-primary" id="btn-capture">捕获</button>
+                    <button class="btn btn-success" id="btn-analyze">分析</button>
+                </div>
+
+                <div class="result-text" id="result-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settings-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">设置</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-section">
+                        <h6>窗口设置</h6>
+                        <div class="mb-3">
+                            <label for="opacity-slider" class="form-label">窗口透明度 <span id="opacity-value">70%</span></label>
+                            <input type="range" class="form-range" id="opacity-slider" min="20" max="100" value="70">
+                        </div>
+                        <div class="mb-3">
+                            <label for="size-slider" class="form-label">窗口大小 <span id="size-value">100%</span></label>
+                            <input type="range" class="form-range" id="size-slider" min="50" max="150" value="100">
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h6>API设置</h6>
+                        <div class="mb-3 api-key-input">
+                            <label for="deepseek-api-key" class="form-label">DeepSeek API密钥</label>
+                            <input type="password" class="form-control" id="deepseek-api-key">
+                        </div>
+                        <div class="mb-3 api-key-input">
+                            <label for="google-api-key" class="form-label">Google AI API密钥</label>
+                            <input type="password" class="form-control" id="google-api-key">
+                        </div>
+                        <div class="mb-3 api-key-input">
+                            <label for="grok-api-key" class="form-label">Grok API密钥</label>
+                            <input type="password" class="form-control" id="grok-api-key">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="save-settings">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drag Overlay (for Window Dragging) -->
+    <div id="drag-overlay" class="drag-overlay"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

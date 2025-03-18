@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+    </style>
+
+    <!-- Floating window styles -->
+    <style name="FloatingWindowStyle">
+        <item name="android:background">@color/colorFloatingWindow</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
+    <style name="FloatingWindowExpandedStyle">
+        <item name="android:background">@color/colorFloatingWindowExpanded</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:elevation">6dp</item>
+    </style>
+
+    <!-- Text styles -->
+    <style name="TextAppearance.Heading" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textColor">@color/colorText</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Content" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/colorText</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextAppearance.Caption" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/colorTextSecondary</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <!-- Button styles -->
+    <style name="FloatingWindowButton">
+        <item name="android:background">@color/colorButtonBackground</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:textColor">@color/colorText</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="ActionButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/colorText</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">36dp</item>
+    </style>
+</resources>
